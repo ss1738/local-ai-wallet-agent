@@ -1,0 +1,26 @@
+{
+  "name": "local-ai-wallet-agent",
+  "version": "0.1.0",
+  "description": "On-device AI agent for self-custodial payments. Local-first, no cloud, human-confirmed. Built to run on Tether QVAC (on-device AI) and WDK (self-custodial wallet).",
+  "type": "module",
+  "license": "Apache-2.0",
+  "author": "Satyawan Singh (https://github.com/ss1738)",
+  "bin": {
+    "wallet-agent": "dist/index.js"
+  },
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}
