@@ -1,6 +1,7 @@
 import { createInterface } from "node:readline/promises";
 import { stdin, stdout } from "node:process";
 import { RuleIntentParser } from "./intent/parser.js";
+import { LlmIntentParser } from "./intent/llm-parser.js";
 import { MockWallet } from "./wallet/wallet.js";
 import { WdkWallet } from "./wallet/wdk-wallet.js";
 import { RuleRiskEngine } from "./risk/risk.js";
@@ -14,8 +15,11 @@ async function main(): Promise<void> {
   const useWdk = process.env.WALLET_MODE === "wdk";
   const wallet = useWdk ? new WdkWallet({ rpc: process.env.WDK_RPC }) : new MockWallet();
 
+  const useQvac = process.env.AI_MODE === "qvac";
+  const parser = useQvac ? new LlmIntentParser() : new RuleIntentParser();
+
   const agent = new WalletAgent({
-    parser: new RuleIntentParser(),
+    parser,
     wallet,
     risk: new RuleRiskEngine(),
     policy: new PolicyEngine({ maxTransfer: 1000, allowedAssets: ["USDt", "BTC", "ETH"] }),
@@ -29,6 +33,9 @@ async function main(): Promise<void> {
   } else {
     console.log("Local AI Wallet Agent (M1 skeleton, mock wallet, testnet dry-run)");
     console.log("Set WALLET_MODE=wdk to connect a real Sepolia wallet.\n");
+  }
+  if (useQvac) {
+    console.log("On-device intent parsing via QVAC. The first request downloads a small model.");
   }
   console.log('Try: "balance", "address", "history", "send 40 usdt to alex", "send 800 usdt to 0xnew".');
   console.log('Type "exit" to quit.\n');

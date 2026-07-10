@@ -15,7 +15,12 @@ It approves a normal payment, then flags a large transfer to a brand-new recipie
 
 ## Status
 
-M1 in progress. The end-to-end flow runs against a mock wallet by default, and a **real WDK self-custodial wallet is wired in read-only mode**: with `WALLET_MODE=wdk` it derives a real address and reads a live Sepolia testnet balance. Transfers still stay a dry-run, nothing is ever broadcast. Rule-based intent parsing and a rule-based risk gate stand in for the QVAC on-device model and the trained anomaly model, which arrive next and in M2.
+M1 in progress. The end-to-end flow runs on a mock wallet with rule-based parsing by default, and both real integrations are wired as opt-in:
+
+- `WALLET_MODE=wdk` connects a **real WDK self-custodial wallet** that derives a real address and reads a live Sepolia testnet balance.
+- `AI_MODE=qvac` parses intent with a **small on-device LLM via QVAC** (Llama 3.2 1B, quantized), no cloud.
+
+Transfers still stay a dry-run, nothing is ever broadcast. A rule-based risk gate stands in for the trained anomaly model, which arrives with RAG spending insights in M2.
 
 ## Why
 
@@ -81,9 +86,20 @@ WALLET_MODE=wdk npm run dev
 
 On first run it generates a testnet seed and saves it to `.wallet/seed.json` (gitignored, testnet only). It prints your address; run `address` to see it again, fund it from a Sepolia faucet, then `balance` reads the live on-chain balance. Keys stay on your device (WDK holds them), and transfers remain a dry-run, nothing is broadcast.
 
+### On-device AI (QVAC)
+
+By default, intent parsing is rule-based so it runs with no model. To parse requests with a real on-device LLM (no cloud), install QVAC and enable it:
+
+```
+npm install @qvac/sdk
+AI_MODE=qvac npm run dev
+```
+
+The first request downloads a small quantized model (Llama 3.2 1B) and runs it locally. The model only proposes an intent; the deterministic policy layer still validates and bounds every action. If the model is unavailable it falls back to rule-based parsing, so the agent never breaks. Runs best on Apple Silicon.
+
 ## Roadmap
 
-- M1: wallet and AI foundation. Natural language to drafted transfer, confirmation gate, testnet dry-run. WDK read-only wallet is wired (real address and balance); remaining: WDK signing and broadcast behind the confirmation gate, and QVAC for on-device intent parsing.
+- M1: wallet and AI foundation. Natural language to drafted transfer, confirmation gate, testnet dry-run. WDK read-only wallet and QVAC on-device intent parsing are wired (opt-in). Remaining: WDK signing and broadcast behind the confirmation gate.
 - M2: on-device transaction risk model and retrieval-augmented spending insights over local history.
 - M3: Expo mobile app (self-custodial via WDK), documentation, threat model, tagged release.
 
