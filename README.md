@@ -1,8 +1,17 @@
 # Local AI Wallet Agent
 
+[![CI](https://github.com/ss1738/local-ai-wallet-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/ss1738/local-ai-wallet-agent/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+
 An on-device AI agent for self-custodial payments. You ask in plain language, it drafts the wallet operation, checks it for risk locally, and does nothing until you confirm. No cloud, no custody of your keys.
 
 Built to run on Tether's open stack: QVAC for on-device AI and WDK for the self-custodial wallet. This repository currently ships a runnable skeleton with mock adapters so the full flow works today. The QVAC and WDK integrations land per the roadmap below.
+
+## Demo
+
+![The agent scores each transfer for risk and stops for confirmation before anything is sent](docs/demo.png)
+
+It approves a normal payment, then flags a large transfer to a brand-new recipient as HIGH risk and holds it at the confirmation gate.
 
 ## Status
 
