@@ -28,6 +28,9 @@ export class PolicyEngine {
       case "history":
         return { allowed: true, operation: { type: "read_history" } };
 
+      case "address":
+        return { allowed: true, operation: { type: "read_address" } };
+
       case "insights":
         return {
           allowed: true,

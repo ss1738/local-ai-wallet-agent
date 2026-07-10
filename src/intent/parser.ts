@@ -23,6 +23,9 @@ export class RuleIntentParser implements IntentParser {
     if (/\b(history|transactions?|recent|activity)\b/.test(lower)) {
       return { kind: "history", raw };
     }
+    if (/\b(address|receive|deposit|my wallet)\b/.test(lower)) {
+      return { kind: "address", raw };
+    }
 
     const transfer = lower.match(
       /\b(?:send|transfer|pay)\s+([\d.]+)\s*([a-z]{2,6})?\s+to\s+(.+)$/,

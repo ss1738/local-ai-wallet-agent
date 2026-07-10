@@ -1,6 +1,10 @@
 import type { DraftTransfer, TxRecord } from "../types.js";
 
 export interface Wallet {
+  /** Read-only. The wallet's receive address. */
+  getAddress(): Promise<string>;
+  /** The native asset this wallet reports balances in. */
+  assetLabel(): string;
   /** Read-only. Current balance for an asset. */
   getBalance(asset: string): Promise<number>;
   /** Read-only. Recent transaction history. */
@@ -31,6 +35,14 @@ export class MockWallet implements Wallet {
     { date: "2026-06-25", direction: "out", amount: 300, asset: "USDt", counterparty: "landlord" },
   ];
   private recipients = ["alex", "payroll", "coffee-shop", "landlord"];
+
+  async getAddress(): Promise<string> {
+    return "0xMockWa11et000000000000000000000000000000";
+  }
+
+  assetLabel(): string {
+    return "USDt";
+  }
 
   async getBalance(asset: string): Promise<number> {
     return this.balances[asset] ?? 0;

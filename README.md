@@ -15,7 +15,7 @@ It approves a normal payment, then flags a large transfer to a brand-new recipie
 
 ## Status
 
-M1 skeleton. The end-to-end flow runs against an in-memory mock wallet in testnet dry-run mode, so nothing is ever broadcast. Rule-based intent parsing and a rule-based risk gate stand in for the QVAC model and the trained anomaly model, which arrive in M1 completion and M2.
+M1 in progress. The end-to-end flow runs against a mock wallet by default, and a **real WDK self-custodial wallet is wired in read-only mode**: with `WALLET_MODE=wdk` it derives a real address and reads a live Sepolia testnet balance. Transfers still stay a dry-run, nothing is ever broadcast. Rule-based intent parsing and a rule-based risk gate stand in for the QVAC on-device model and the trained anomaly model, which arrive next and in M2.
 
 ## Why
 
@@ -71,9 +71,19 @@ send 800 usdt to 0xnewaddress
 
 The last one is flagged as higher risk (new recipient, large amount) and still stops for your confirmation before doing anything.
 
+### Real wallet (Sepolia testnet)
+
+By default the agent uses a mock wallet so it runs offline. To connect a real self-custodial WDK wallet on the Sepolia testnet:
+
+```
+WALLET_MODE=wdk npm run dev
+```
+
+On first run it generates a testnet seed and saves it to `.wallet/seed.json` (gitignored, testnet only). It prints your address; run `address` to see it again, fund it from a Sepolia faucet, then `balance` reads the live on-chain balance. Keys stay on your device (WDK holds them), and transfers remain a dry-run, nothing is broadcast.
+
 ## Roadmap
 
-- M1: wallet and AI foundation. Natural language to drafted transfer, confirmation gate, testnet dry-run. Wire QVAC for intent parsing and WDK for the real self-custodial wallet.
+- M1: wallet and AI foundation. Natural language to drafted transfer, confirmation gate, testnet dry-run. WDK read-only wallet is wired (real address and balance); remaining: WDK signing and broadcast behind the confirmation gate, and QVAC for on-device intent parsing.
 - M2: on-device transaction risk model and retrieval-augmented spending insights over local history.
 - M3: Expo mobile app (self-custodial via WDK), documentation, threat model, tagged release.
 

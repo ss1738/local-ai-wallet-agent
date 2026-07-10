@@ -34,10 +34,13 @@ export class WalletAgent {
     const op = decision.operation;
     switch (op.type) {
       case "read_balance": {
-        const asset = op.asset ?? "USDt";
-        const bal = await this.deps.wallet.getBalance(asset);
-        return `Balance: ${bal} ${asset}`;
+        const label = this.deps.wallet.assetLabel();
+        const bal = await this.deps.wallet.getBalance(label);
+        return `Balance: ${bal} ${label}`;
       }
+
+      case "read_address":
+        return `Address: ${await this.deps.wallet.getAddress()}`;
 
       case "read_history": {
         const hist = await this.deps.wallet.getHistory();

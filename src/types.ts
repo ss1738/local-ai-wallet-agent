@@ -1,4 +1,10 @@
-export type IntentKind = "balance" | "history" | "transfer" | "insights" | "unknown";
+export type IntentKind =
+  | "balance"
+  | "history"
+  | "address"
+  | "transfer"
+  | "insights"
+  | "unknown";
 
 export interface Intent {
   kind: IntentKind;
@@ -12,6 +18,7 @@ export interface Intent {
 export type OperationType =
   | "read_balance"
   | "read_history"
+  | "read_address"
   | "draft_transfer"
   | "answer_insights";
 
