@@ -4,7 +4,7 @@ import { RuleIntentParser } from "./intent/parser.js";
 import { LlmIntentParser } from "./intent/llm-parser.js";
 import { MockWallet } from "./wallet/wallet.js";
 import { WdkWallet } from "./wallet/wdk-wallet.js";
-import { RuleRiskEngine } from "./risk/risk.js";
+import { ForestRiskEngine } from "./risk/forest.js";
 import { PolicyEngine } from "./policy/policy.js";
 import { makeConfirm } from "./confirm/confirm.js";
 import { WalletAgent } from "./agent.js";
@@ -21,7 +21,7 @@ async function main(): Promise<void> {
   const agent = new WalletAgent({
     parser,
     wallet,
-    risk: new RuleRiskEngine(),
+    risk: new ForestRiskEngine(),
     policy: new PolicyEngine({ maxTransfer: 1000, allowedAssets: ["USDt", "BTC", "ETH"] }),
     confirm: makeConfirm(rl),
   });

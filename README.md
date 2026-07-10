@@ -20,7 +20,7 @@ M1 in progress. The end-to-end flow runs on a mock wallet with rule-based parsin
 - `WALLET_MODE=wdk` connects a **real WDK self-custodial wallet** that derives a real address and reads a live Sepolia testnet balance.
 - `AI_MODE=qvac` parses intent with a **small on-device LLM via QVAC** (Llama 3.2 1B, quantized), no cloud.
 
-After you confirm, a transfer is broadcast: a real send on the WDK testnet wallet, or a simulated send on the mock wallet. Nothing is ever sent without confirmation. A rule-based risk gate stands in for the trained anomaly model, which arrives with RAG spending insights in M2.
+After you confirm, a transfer is broadcast: a real send on the WDK testnet wallet, or a simulated send on the mock wallet. Nothing is ever sent without confirmation. The risk gate is a **trained on-device anomaly model** (an Isolation Forest fit to the account's transaction profile), with an evaluation harness measuring detection quality. Retrieval-augmented spending insights over history are the remaining M2 piece.
 
 ## Why
 
@@ -39,19 +39,19 @@ Wallet UX assumes a human clicking through forms, and AI money assistants almost
 ```
 natural language
       |
-  intent parser        rule-based now, QVAC LLM later
+  intent parser        rule-based, or on-device QVAC LLM
       |
   policy engine         deterministic: bounded operations, hard limits
       |
    +--+----------------+
    |                   |
  read / draft        risk engine
- via wallet          rule-based now, trained model in M2
- (WDK later)
+ via wallet          trained Isolation Forest
+ (mock or real WDK)
       |
  confirmation gate     human in the loop
       |
- dry-run (M1) or signed WDK broadcast (later)
+ simulated (mock) or real WDK testnet broadcast
 ```
 
 The model reaches the wallet through the policy layer only. It proposes an intent; deterministic code decides the operation and enforces the limits.
@@ -100,7 +100,7 @@ The first request downloads a small quantized model (Llama 3.2 1B) and runs it l
 ## Roadmap
 
 - M1 (complete): wallet and AI foundation. Natural language to intent, deterministic policy, on-device risk gate, human confirmation, and real testnet signing and broadcast via WDK, plus optional on-device QVAC intent parsing.
-- M2: on-device transaction risk model and retrieval-augmented spending insights over local history.
+- M2 (in progress): the on-device transaction risk gate is a trained Isolation Forest with an evaluation harness. Retrieval-augmented spending insights over history via QVAC are next.
 - M3: Expo mobile app (self-custodial via WDK), documentation, threat model, tagged release.
 
 ## License
