@@ -2,6 +2,8 @@ import { createInterface } from "node:readline/promises";
 import { stdin, stdout } from "node:process";
 import { RuleIntentParser } from "./intent/parser.js";
 import { LlmIntentParser } from "./intent/llm-parser.js";
+import { RuleInsightsEngine } from "./insights/insights.js";
+import { QvacInsightsEngine } from "./insights/qvac-insights.js";
 import { MockWallet } from "./wallet/wallet.js";
 import { WdkWallet } from "./wallet/wdk-wallet.js";
 import { ForestRiskEngine } from "./risk/forest.js";
@@ -17,6 +19,7 @@ async function main(): Promise<void> {
 
   const useQvac = process.env.AI_MODE === "qvac";
   const parser = useQvac ? new LlmIntentParser() : new RuleIntentParser();
+  const insights = useQvac ? new QvacInsightsEngine() : new RuleInsightsEngine();
 
   const agent = new WalletAgent({
     parser,
@@ -24,6 +27,7 @@ async function main(): Promise<void> {
     risk: new ForestRiskEngine(),
     policy: new PolicyEngine({ maxTransfer: 1000, allowedAssets: ["USDt", "BTC", "ETH"] }),
     confirm: makeConfirm(rl),
+    insights,
   });
 
   if (useWdk) {

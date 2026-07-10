@@ -3,6 +3,7 @@ import type { Wallet } from "./wallet/wallet.js";
 import type { RiskEngine } from "./risk/risk.js";
 import type { PolicyEngine } from "./policy/policy.js";
 import type { Confirm } from "./confirm/confirm.js";
+import type { InsightsEngine } from "./insights/insights.js";
 
 export interface AgentDeps {
   parser: IntentParser;
@@ -10,6 +11,7 @@ export interface AgentDeps {
   risk: RiskEngine;
   policy: PolicyEngine;
   confirm: Confirm;
+  insights: InsightsEngine;
 }
 
 /**
@@ -53,12 +55,8 @@ export class WalletAgent {
       }
 
       case "answer_insights": {
-        // Placeholder until QVAC RAG over history is wired in M2.
         const hist = await this.deps.wallet.getHistory(50);
-        const out = hist
-          .filter((t) => t.direction === "out")
-          .reduce((sum, t) => sum + t.amount, 0);
-        return `Local insight (rule-based for now): total outgoing in recent history is ${out} USDt. QVAC-powered Q&A lands in M2.`;
+        return this.deps.insights.answer(op.query ?? "", hist);
       }
 
       case "draft_transfer": {

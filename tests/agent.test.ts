@@ -5,6 +5,7 @@ import { MockWallet } from "../src/wallet/wallet.js";
 import { RuleRiskEngine } from "../src/risk/risk.js";
 import { PolicyEngine } from "../src/policy/policy.js";
 import { WalletAgent } from "../src/agent.js";
+import { RuleInsightsEngine } from "../src/insights/insights.js";
 
 function makeAgent(confirmAnswer: boolean): WalletAgent {
   return new WalletAgent({
@@ -13,6 +14,7 @@ function makeAgent(confirmAnswer: boolean): WalletAgent {
     risk: new RuleRiskEngine(),
     policy: new PolicyEngine({ maxTransfer: 1000, allowedAssets: ["USDt", "BTC"] }),
     confirm: async () => confirmAnswer,
+    insights: new RuleInsightsEngine(),
   });
 }
 
@@ -26,6 +28,10 @@ test("reads history", async () => {
 
 test("blocks an unknown request", async () => {
   assert.match(await makeAgent(false).handle("hello there"), /^Blocked/);
+});
+
+test("answers a spending-insights question from history", async () => {
+  assert.match(await makeAgent(false).handle("what did i spend"), /transactions/i);
 });
 
 test("known small transfer, confirmed, broadcasts (simulated on the mock wallet)", async () => {

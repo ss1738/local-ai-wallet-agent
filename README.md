@@ -20,7 +20,7 @@ M1 in progress. The end-to-end flow runs on a mock wallet with rule-based parsin
 - `WALLET_MODE=wdk` connects a **real WDK self-custodial wallet** that derives a real address and reads a live Sepolia testnet balance.
 - `AI_MODE=qvac` parses intent with a **small on-device LLM via QVAC** (Llama 3.2 1B, quantized), no cloud.
 
-After you confirm, a transfer is broadcast: a real send on the WDK testnet wallet, or a simulated send on the mock wallet. Nothing is ever sent without confirmation. The risk gate is a **trained on-device anomaly model** (an Isolation Forest fit to the account's transaction profile), with an evaluation harness measuring detection quality. Retrieval-augmented spending insights over history are the remaining M2 piece.
+After you confirm, a transfer is broadcast: a real send on the WDK testnet wallet, or a simulated send on the mock wallet. Nothing is ever sent without confirmation. The risk gate is a **trained on-device anomaly model** (an Isolation Forest fit to the account's transaction profile), with an evaluation harness measuring detection quality. Spending questions are answered from the history: a rule-based summary by default, or **retrieval-augmented Q&A over your transactions via QVAC** when enabled.
 
 ## Why
 
@@ -70,6 +70,8 @@ Then try:
 ```
 balance
 history
+address
+what did i spend
 send 40 usdt to alex
 send 800 usdt to 0xnewaddress
 ```
@@ -100,7 +102,7 @@ The first request downloads a small quantized model (Llama 3.2 1B) and runs it l
 ## Roadmap
 
 - M1 (complete): wallet and AI foundation. Natural language to intent, deterministic policy, on-device risk gate, human confirmation, and real testnet signing and broadcast via WDK, plus optional on-device QVAC intent parsing.
-- M2 (in progress): the on-device transaction risk gate is a trained Isolation Forest with an evaluation harness. Retrieval-augmented spending insights over history via QVAC are next.
+- M2 (complete): on-device transaction risk gate is a trained Isolation Forest with an evaluation harness, plus retrieval-augmented spending insights over history via QVAC (with a rule-based fallback).
 - M3: Expo mobile app (self-custodial via WDK), documentation, threat model, tagged release.
 
 ## License
