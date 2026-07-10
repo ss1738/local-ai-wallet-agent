@@ -28,10 +28,11 @@ test("blocks an unknown request", async () => {
   assert.match(await makeAgent(false).handle("hello there"), /^Blocked/);
 });
 
-test("known small transfer, confirmed, stays a dry-run", async () => {
+test("known small transfer, confirmed, broadcasts (simulated on the mock wallet)", async () => {
   const out = await makeAgent(true).handle("send 40 usdt to alex");
   assert.match(out, /Confirmed/);
-  assert.match(out, /dry-run/);
+  assert.match(out, /simulated/);
+  assert.match(out, /Tx: 0x/);
 });
 
 test("declining a transfer sends nothing", async () => {

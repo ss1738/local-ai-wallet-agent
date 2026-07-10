@@ -3,7 +3,7 @@ import { resolve, dirname } from "node:path";
 import WDK from "@tetherto/wdk";
 import WalletManagerEvm from "@tetherto/wdk-wallet-evm";
 import type { Wallet } from "./wallet.js";
-import type { DraftTransfer, TxRecord } from "../types.js";
+import type { BroadcastResult, DraftTransfer, TxRecord } from "../types.js";
 
 const CHAIN = "ethereum";
 const DEFAULT_RPC = "https://ethereum-sepolia-rpc.publicnode.com";
@@ -30,6 +30,7 @@ export class WdkWallet implements Wallet {
   private accountPromise: Promise<{
     getAddress(): Promise<string>;
     getBalance(): Promise<unknown>;
+    sendTransaction(tx: { to: string; value: bigint }): Promise<{ hash: string }>;
   }>;
 
   constructor(cfg: WdkConfig = {}) {
@@ -81,6 +82,20 @@ export class WdkWallet implements Wallet {
       networkFeeEstimate: 0,
       broadcast: false,
     };
+  }
+
+  async broadcastTransfer(input: {
+    amount: number;
+    asset: string;
+    recipient: string;
+  }): Promise<BroadcastResult> {
+    if (!/^0x[0-9a-fA-F]{40}$/.test(input.recipient)) {
+      throw new Error("recipient must be a 0x address for a real send");
+    }
+    const account = await this.accountPromise;
+    const value = BigInt(Math.round(input.amount * 1e18));
+    const res = await account.sendTransaction({ to: input.recipient, value });
+    return { hash: res.hash, simulated: false };
   }
 
   async knownRecipients(): Promise<string[]> {

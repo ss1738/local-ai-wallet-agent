@@ -20,7 +20,7 @@ M1 in progress. The end-to-end flow runs on a mock wallet with rule-based parsin
 - `WALLET_MODE=wdk` connects a **real WDK self-custodial wallet** that derives a real address and reads a live Sepolia testnet balance.
 - `AI_MODE=qvac` parses intent with a **small on-device LLM via QVAC** (Llama 3.2 1B, quantized), no cloud.
 
-Transfers still stay a dry-run, nothing is ever broadcast. A rule-based risk gate stands in for the trained anomaly model, which arrives with RAG spending insights in M2.
+After you confirm, a transfer is broadcast: a real send on the WDK testnet wallet, or a simulated send on the mock wallet. Nothing is ever sent without confirmation. A rule-based risk gate stands in for the trained anomaly model, which arrives with RAG spending insights in M2.
 
 ## Why
 
@@ -84,7 +84,7 @@ By default the agent uses a mock wallet so it runs offline. To connect a real se
 WALLET_MODE=wdk npm run dev
 ```
 
-On first run it generates a testnet seed and saves it to `.wallet/seed.json` (gitignored, testnet only). It prints your address; run `address` to see it again, fund it from a Sepolia faucet, then `balance` reads the live on-chain balance. Keys stay on your device (WDK holds them), and transfers remain a dry-run, nothing is broadcast.
+On first run it generates a testnet seed and saves it to `.wallet/seed.json` (gitignored, testnet only). It prints your address; run `address` to see it again, fund it from a Sepolia faucet, then `balance` reads the live on-chain balance. Keys stay on your device (WDK holds them). After you confirm, a transfer to a valid `0x` address is signed and broadcast to Sepolia (fund the wallet from a faucet first, or the send is rejected for insufficient funds).
 
 ### On-device AI (QVAC)
 
@@ -99,7 +99,7 @@ The first request downloads a small quantized model (Llama 3.2 1B) and runs it l
 
 ## Roadmap
 
-- M1: wallet and AI foundation. Natural language to drafted transfer, confirmation gate, testnet dry-run. WDK read-only wallet and QVAC on-device intent parsing are wired (opt-in). Remaining: WDK signing and broadcast behind the confirmation gate.
+- M1 (complete): wallet and AI foundation. Natural language to intent, deterministic policy, on-device risk gate, human confirmation, and real testnet signing and broadcast via WDK, plus optional on-device QVAC intent parsing.
 - M2: on-device transaction risk model and retrieval-augmented spending insights over local history.
 - M3: Expo mobile app (self-custodial via WDK), documentation, threat model, tagged release.
 

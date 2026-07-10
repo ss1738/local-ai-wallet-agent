@@ -1,4 +1,4 @@
-import type { DraftTransfer, TxRecord } from "../types.js";
+import type { BroadcastResult, DraftTransfer, TxRecord } from "../types.js";
 
 export interface Wallet {
   /** Read-only. The wallet's receive address. */
@@ -15,6 +15,12 @@ export interface Wallet {
     asset: string;
     recipient: string;
   }): Promise<DraftTransfer>;
+  /** Sign and broadcast a transfer. Only ever called after human confirmation. */
+  broadcastTransfer(input: {
+    amount: number;
+    asset: string;
+    recipient: string;
+  }): Promise<BroadcastResult>;
   /** Previously used recipients, consumed by the risk layer. */
   knownRecipients(): Promise<string[]>;
 }
@@ -64,6 +70,20 @@ export class MockWallet implements Wallet {
       networkFeeEstimate: 0.01,
       broadcast: false,
     };
+  }
+
+  async broadcastTransfer(input: {
+    amount: number;
+    asset: string;
+    recipient: string;
+  }): Promise<BroadcastResult> {
+    // The mock wallet never touches a network. It returns a clearly simulated
+    // hash so the confirmed path can be demonstrated without any real send.
+    const seed = Buffer.from(`sim:${input.amount}:${input.asset}:${input.recipient}`)
+      .toString("hex")
+      .padEnd(64, "0")
+      .slice(0, 64);
+    return { hash: `0x${seed}`, simulated: true };
   }
 
   async knownRecipients(): Promise<string[]> {

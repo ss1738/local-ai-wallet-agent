@@ -47,6 +47,12 @@ export interface DraftTransfer {
   broadcast: boolean;
 }
 
+export interface BroadcastResult {
+  hash: string;
+  /** true when no real network was touched (mock wallet). */
+  simulated: boolean;
+}
+
 export type RiskLevel = "low" | "medium" | "high";
 
 export interface RiskAssessment {

@@ -86,9 +86,20 @@ export class WalletAgent {
         const ok = await this.deps.confirm("Confirm this transfer?");
         if (!ok) return "Cancelled. Nothing was sent.";
 
-        // M1 is a testnet dry-run: we never broadcast yet. WDK signing and
-        // broadcast land at M1 completion, still behind this same gate.
-        return "Confirmed. [dry-run] Broadcast is disabled in M1, so nothing left your wallet.";
+        // Broadcast happens only here, after explicit confirmation. On the mock
+        // wallet it is simulated; on WDK it is a real testnet send.
+        try {
+          const { hash, simulated } = await this.deps.wallet.broadcastTransfer({
+            amount,
+            asset,
+            recipient,
+          });
+          return simulated
+            ? `Confirmed. [simulated] Mock broadcast, nothing real was sent. Tx: ${hash}`
+            : `Confirmed. Broadcast to the testnet. Tx: ${hash}`;
+        } catch (err) {
+          return `Confirmed, but the send failed: ${(err as Error).message}`;
+        }
       }
 
       default:
