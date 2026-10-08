@@ -15,7 +15,7 @@ It approves a normal payment, then flags a large transfer to a brand-new recipie
 
 ## Status
 
-The end-to-end flow runs on a mock wallet with rule-based parsing by default. The WDK integration is an opt-in Sepolia testnet path. The QVAC adapter needs validation against a current QVAC SDK release before it should be treated as a supported integration.
+The end-to-end flow runs on a mock wallet with rule-based parsing by default. The WDK integration is an opt-in Sepolia testnet path. The QVAC adapter is pinned to QVAC SDK 0.21.0 and has a public-API compatibility smoke test. Actual local model downloads and inference remain environment-specific and experimental.
 
 - `WALLET_MODE=wdk` connects a **real WDK self-custodial wallet** that derives a real address and reads a live Sepolia testnet balance.
 - `AI_MODE=qvac` selects the experimental QVAC adapter. If QVAC is unavailable or the adapter cannot initialize, the agent falls back to the deterministic rule-based parser.
@@ -58,7 +58,7 @@ The model reaches the wallet through the policy layer only. It proposes an inten
 
 ## Run
 
-Requires Node 20 or newer (QVAC will require Node 22 once wired).
+Requires Node 20 or newer. The bundled QVAC adapter is tested against the published QVAC SDK import surface; see its documentation for host-specific runtime requirements before downloading a model.
 
 ```
 npm install
@@ -90,20 +90,19 @@ On first run it generates a testnet seed and saves it to `.wallet/seed.json` (gi
 
 ### Experimental on-device AI (QVAC)
 
-By default, intent parsing is rule-based so it runs with no model. The repository includes an experimental QVAC adapter, but it requires compatibility validation against the installed QVAC SDK before use:
+By default, intent parsing is rule-based so it runs with no model. The repository includes an experimental QVAC adapter pinned to the current published SDK surface:
 
 ```
-npm install @qvac/sdk
 AI_MODE=qvac npm run dev
 ```
 
-The model only proposes an intent; the deterministic policy layer still validates and bounds every action. If the model is unavailable it falls back to rule-based parsing, so the agent remains functional. Runs best on Apple Silicon.
+The first QVAC use may download a model. The model only proposes an intent; deterministic policy still validates and bounds every action. If the SDK, model, or model output is unavailable, the agent falls back to rule-based parsing. See [THREAT_MODEL.md](THREAT_MODEL.md) before treating the prototype as anything beyond a testnet tool.
 
 ## Roadmap
 
 - M1 (complete): natural-language intent parsing, deterministic policy, risk gate, human confirmation, and real Sepolia testnet signing and broadcast via WDK.
 - M2 (complete): transaction risk gate with an evaluation harness, plus rule-based spending insights over mock history.
-- M3: validate and update the QVAC adapter, add a threat model and integration tests, then create a tagged release.
+- M3: validate local model execution across supported hosts, extend adversarial integration tests, complete a security review, and create a tagged release.
 
 ## License
 

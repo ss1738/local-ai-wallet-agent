@@ -19,12 +19,11 @@ export interface WdkConfig {
 
 /**
  * A real self-custodial wallet backed by Tether's WDK, pointed at the Sepolia
- * testnet. This milestone is read-only: it derives a real address and reads a
- * real on-chain balance. draftTransfer stays a local dry-run and never calls
- * sendTransaction, so nothing is ever broadcast. Signing/broadcast is a
- * separate, gated step delivered later, still behind the confirmation gate.
+ * testnet. It derives a real address and reads a real on-chain balance.
+ * draftTransfer stays local; broadcastTransfer is the only method that calls
+ * sendTransaction, and WalletAgent invokes it only after explicit confirmation.
  *
- * Keys never leave the device: WDK holds them, the app only reads.
+ * Keys never leave the device: WDK holds them for this testnet wallet.
  */
 export class WdkWallet implements Wallet {
   private accountPromise: Promise<{
