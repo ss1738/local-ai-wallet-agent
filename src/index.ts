@@ -31,11 +31,11 @@ async function main(): Promise<void> {
   });
 
   if (useWdk) {
-    console.log("Local AI Wallet Agent (real WDK wallet, Sepolia testnet, read-only)");
+    console.log("Local AI Wallet Agent (real WDK wallet, Sepolia testnet)");
     console.log(`Address: ${await wallet.getAddress()}`);
-    console.log("Fund it from a Sepolia faucet to see a live balance. Transfers stay dry-run.\n");
+    console.log("Fund it from a Sepolia faucet to see a live balance. Transfers require explicit confirmation.\n");
   } else {
-    console.log("Local AI Wallet Agent (M1 skeleton, mock wallet, testnet dry-run)");
+    console.log("Local AI Wallet Agent (mock wallet, simulated transfers)");
     console.log("Set WALLET_MODE=wdk to connect a real Sepolia wallet.\n");
   }
   if (useQvac) {
